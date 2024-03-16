@@ -1,0 +1,46 @@
+package com.application.productsale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.StandardPasswordEncoder;
+
+import com.application.productsale.service.impl.UserService;
+
+@EnableWebSecurity
+@SpringBootApplication
+public class ProductsaleapplicationApplication extends WebSecurityConfiguration {
+	
+	@Autowired
+	UserService userService;
+
+	public static void main(String[] args) {
+		SpringApplication.run(ProductsaleapplicationApplication.class, args);
+	}
+	
+	@Bean
+	PasswordEncoder bCryptPasswordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+	
+	@Bean
+	DaoAuthenticationProvider daoAuthenticationProvider() {
+		
+		DaoAuthenticationProvider authenticationProvider=new DaoAuthenticationProvider();
+		authenticationProvider.setPasswordEncoder(bCryptPasswordEncoder());
+		authenticationProvider.setUserDetailsService(this.userService);
+		return authenticationProvider;
+	}
+	
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception{
+		auth.authenticationProvider(authenticationProvider);
+	}
+
+}

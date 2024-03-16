@@ -1,0 +1,58 @@
+package com.application.productsale.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
+
+import com.application.productsale.model.Users;
+import com.application.productsale.repository.UserRespository;
+
+@Configuration
+@EnableWebSecurity
+public class SpringSecurityConfiguration {
+
+	@Autowired
+	UserRespository userRespository;
+
+	@Bean
+	public UserDetailsService userDetailsService() {
+		List<UserDetails> userDetails = new ArrayList<>();
+		List<Users> users = userRespository.findAll();
+		for (Users user : users) {
+
+			UserDetails details = User.withUsername(user.getUsername()).password(user.getPassword())
+					.roles(user.getRole()).build();
+			userDetails.add(details);
+
+		}
+		return new InMemoryUserDetailsManager(userDetails);
+	}
+
+	@Bean
+	public SecurityFilterChain filterChainSecurityFilterChain(HttpSecurity http) throws Exception {
+		
+		return http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth.requestMatchers("/get/**").permitAll())
+				.authorizeHttpRequests(
+						auth -> auth.requestMatchers("/ProductManagement/**").permitAll().anyRequest().authenticated())
+				.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.oauth2ResourceServer(spec -> spec.jwt(Customizer.withDefaults())).httpBasic(Customizer.withDefaults()).build();
+		// http.csrf(csrf ->
+		// csrf.disable()).authorizeHttpRequests().requestMatchers("/get/**").permitAll().and().authorizeHttpRequests().requestMatchers("/ProductManagement/**").authenticated().and().formLogin().and().build();
+		//return http.build();
+
+	}
+
+}

@@ -1,0 +1,5 @@
+package com.application.productsale.repository;
+
+public interface UserRespository {
+
+}

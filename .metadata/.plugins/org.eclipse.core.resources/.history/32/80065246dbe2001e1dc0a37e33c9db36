@@ -1,0 +1,105 @@
+package com.application.productsale.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+
+import com.application.productsale.exception.CommonException;
+import com.application.productsale.model.Product;
+import com.application.productsale.model.Sale;
+import com.application.productsale.repository.ProductRepository;
+import com.application.productsale.repository.SaleRepository;
+import com.application.productsale.service.ProductServiceInterface;
+
+@Service
+public class ProductService implements ProductServiceInterface {
+
+	@Autowired
+	ProductRepository productRepository;
+
+	@Autowired
+	SaleRepository saleRepository;
+
+	@Override
+	public List<Product> getAllProducts(Integer pageno, Integer pagesize) {
+		// TODO Auto-generated method stub
+		Pageable paging = PageRequest.of(pageno, pagesize);
+		Page<Product> pagedResult = productRepository.findAll(paging);
+		if (pagedResult.hasContent()) {
+			return pagedResult.getContent();
+		} else {
+			return new ArrayList<Product>();
+		}
+	}
+
+	@Override
+	public Product getProductById(int id) {
+		// TODO Auto-generated method stub
+		return productRepository.findById(id).orElseThrow(
+				() -> new CommonException(HttpStatus.NOT_FOUND, "product Details not found for product id " + id));
+	}
+
+	@Override
+	//@Secured("ROLE_ADMIN") 
+	public Product addProduct(Product product) {
+		// TODO Auto-generated method stub
+		return productRepository.save(product);
+	}
+
+	@Override
+	public Product updateProduct(int id, Product product) {
+		// TODO Auto-generated method stub
+		Product existingProduct = productRepository.findById(id).orElseThrow(
+				() -> new CommonException(HttpStatus.NOT_FOUND, "product Details not found for product id " + id));
+		if (product.getDescription() != null)
+			existingProduct.setDescription(product.getDescription());
+		if (product.getName() != null)
+			existingProduct.setName(product.getName());
+		if (product.getPrice() != 0.0)
+			existingProduct.setPrice(product.getPrice());
+		if (product.getQuantity() != 0)
+			existingProduct.setQuantity(product.getQuantity());
+		return existingProduct;
+	}
+
+	@Override
+	public void deleteProduct(int id) {
+		// TODO Auto-generated method stub
+		Product existingProduct = productRepository.findById(id).orElseThrow(
+				() -> new CommonException(HttpStatus.NOT_FOUND, "product Details not found for product id " + id));
+
+		productRepository.delete(existingProduct);
+	}
+
+	@Override
+	public Double getRevenueByProduct(int id) {
+		// TODO Auto-generated method stub
+
+		Product existingProduct = productRepository.findById(id).orElseThrow(
+				() -> new CommonException(HttpStatus.NOT_FOUND, "product Details not found for product id " + id));
+		int totalQuantity = saleRepository.findSalesByProductId(id);
+		return existingProduct.getPrice() * totalQuantity;
+	}
+
+	@Override
+	public Double getTotalRevenue() {
+		// TODO Auto-generated method stub
+		double totalrevenue = 0.0;
+		List<Product> products = productRepository.findAll();
+		for (Product product : products) {
+			int totalQuantity = saleRepository.findSalesByProductId(product.getId());
+			totalrevenue = totalrevenue + (totalQuantity * product.getPrice());
+		}
+		return totalrevenue;
+	}
+
+}

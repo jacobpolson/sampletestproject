@@ -1,0 +1,5 @@
+package com.application.productsale.service;
+
+public interface ProductServiceInterface {
+
+}

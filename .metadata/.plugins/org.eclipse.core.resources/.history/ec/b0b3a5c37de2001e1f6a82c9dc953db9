@@ -1,0 +1,5 @@
+package com.application.productsale.exception;
+
+public class CommonException {
+
+}

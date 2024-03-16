@@ -1,0 +1,33 @@
+package com.application.productsale.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+
+import com.application.productsale.model.Users;
+import com.application.productsale.repository.UserRespository;
+
+@Configuration
+public class SpringSecurityConfiguration{
+	
+	@Autowired
+	UserRespository userRespository;
+	
+	@Bean
+	public InMemoryUserDetailsManager userDetailsService() {
+		List<UserDetails>userDetails=new ArrayList<>();
+		List<Users>users=userRespository.findAll();
+		for(Users user:users) {
+			
+			UserDetails details=User.
+			 
+		}
+		return new InMemoryUserDetailsManager(userDetails);
+	}
+
+}

@@ -1,0 +1,82 @@
+package com.application.productsale.controller;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.application.productsale.model.Product;
+import com.application.productsale.service.ProductServiceInterface;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@RestController
+@RequestMapping("/ProductManagement")
+public class ProductController {
+
+	@Autowired
+	ProductServiceInterface productServiceInterface;
+	
+	/*
+	 * @GetMapping("/") public String home() { return ("<h1>Welc</h1>"); }
+	 */
+
+	@PostMapping("/add")
+	public ResponseEntity<Product> addProductsDetails(@RequestBody Product product) {
+
+		return new ResponseEntity<Product>(productServiceInterface.addProduct(product), HttpStatus.CREATED);
+	}
+
+	@PutMapping("/update/{id}")
+	public ResponseEntity<Product> updateProductDetails(@PathVariable("id") int id, @RequestBody Product product) {
+
+		return new ResponseEntity<Product>(productServiceInterface.updateProduct(id, product), HttpStatus.OK);
+
+	}
+
+	@GetMapping("/getAllProduct")
+	public ResponseEntity<List<Product>> GetAllProductDetails(
+			@RequestParam(value = "pageno", defaultValue = "0") Integer pageno,
+			@RequestParam(value = "pagesize", defaultValue = "10") Integer pagesize) {
+
+		return new ResponseEntity<List<Product>>(productServiceInterface.getAllProducts(pageno, pagesize),
+				HttpStatus.OK);
+
+	}
+
+	@GetMapping("/getProductById/{id}")
+	public ResponseEntity<Product> GetProductDetailsById(@PathVariable("id") int id) {
+
+		return new ResponseEntity<Product>(productServiceInterface.getProductById(id), HttpStatus.OK);
+
+	}
+
+	@DeleteMapping("/deleteById/{id}")
+	public ResponseEntity<String> DeleteProductDetail(@PathVariable("id") int id) {
+		productServiceInterface.deleteProduct(id);
+		return new ResponseEntity<String>("details deleted sucessfully for product :" + id, HttpStatus.OK);
+
+	}
+
+	@GetMapping("/getRevenueByProduct/{id}")
+	public ResponseEntity<Double> getRevenueByProduct(@PathVariable("id") int id) {
+		return new ResponseEntity<Double>(productServiceInterface.getRevenueByProduct(id), HttpStatus.OK);
+
+	}
+	
+	@GetMapping("/getTotalRevenue")
+	public ResponseEntity<Double> getTotalRevenueForsales() {
+		return new ResponseEntity<Double>(productServiceInterface.getTotalRevenue(), HttpStatus.OK);
+
+	}
+
+}

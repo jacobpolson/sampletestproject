@@ -1,0 +1,40 @@
+package com.application.productsale.service.impl;
+
+import java.util.List;
+
+import com.application.productsale.model.Product;
+import com.application.productsale.service.ProductServiceInterface;
+
+public class ProductService implements ProductServiceInterface{
+
+	@Override
+	public List<Product> getAllProducts() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Product getProductById(int id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Product addProduct(Product product) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Product updateProduct(int id, Product product) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void deleteProduct(int id) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}
